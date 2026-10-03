@@ -156,61 +156,61 @@
     </div>
 
     <script>
-        // ============ 核心：智能寻址系统 ============
-        // 只要你的隧道链接变了，只需要改下面这一行！
-        const TUNNEL_URL = "https://你的最新隧道链接.trycloudflare.com";
+                // ============ 核心：智能寻址系统 ============
+                // 这次是真的填进去了！
+                const TUNNEL_URL = "https://pharmaceuticals-rick-brave-occupations.trycloudflare.com";
 
-        let apiUrl = '/submit'; // 默认走本地/隧道
-        if (window.location.hostname.includes('github.io')) {
-            apiUrl = TUNNEL_URL + '/submit'; // 如果在 GitHub 上，就去隧道
-        }
-        // ====================================
-
-        let num1 = Math.floor(Math.random() * 20);
-        let num2 = Math.floor(Math.random() * 20);
-        let correctAnswer = num1 + num2;
-        document.getElementById('mathQuestion').textContent = `${num1} + ${num2} = ?`;
-
-        document.getElementById('bugReportForm').addEventListener('submit', async function (e) {
-            e.preventDefault();
-            if (document.querySelector('input[name="website_url"]').value !== '') {
-                alert('系统检测：非人类操作，已拦截。'); return;
-            }
-            if (parseInt(document.getElementById('mathAnswer').value) !== correctAnswer) {
-                alert('验证失败：数学题计算错误，请重试。'); return;
-            }
-
-            const submitBtn = document.querySelector('.submit-btn');
-            submitBtn.disabled = true;
-            submitBtn.textContent = "正在发送至 G.R.D.M. 总部...";
-
-            try {
-                const response = await fetch(apiUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        title: document.getElementById('bugTitle').value,
-                        desc: document.getElementById('bugDesc').value,
-                        steps: document.getElementById('bugSteps').value
-                    })
-                });
-                const result = await response.json();
-                if (result.status === 'success') {
-                    alert(` 提交成功！\n\n关于“${document.getElementById('bugTitle').value}”的报告已发送至 G.R.D.M. 服务器。`);
-                    document.getElementById('bugReportForm').reset();
-                    num1 = Math.floor(Math.random() * 20); num2 = Math.floor(Math.random() * 20);
-                    correctAnswer = num1 + num2;
-                    document.getElementById('mathQuestion').textContent = `${num1} + ${num2} = ?`;
-                } else {
-                    alert(' 提交失败：服务器返回异常。');
+                let apiUrl = '/submit'; // 默认走本地/隧道
+                if (window.location.hostname.includes('github.io')) {
+                    apiUrl = TUNNEL_URL + '/submit'; // 如果在 GitHub 上，就去隧道
                 }
-            } catch (error) {
-                alert(' 提交失败：G.R.D.M. 接收站当前离线，请稍后再试！');
-            } finally {
-                submitBtn.disabled = false;
-                submitBtn.textContent = "提交反馈报告";
-            }
-        });
+                // ====================================
+
+                let num1 = Math.floor(Math.random() * 20);
+                let num2 = Math.floor(Math.random() * 20);
+                let correctAnswer = num1 + num2;
+                document.getElementById('mathQuestion').textContent = `${num1} + ${num2} = ?`;
+
+                document.getElementById('bugReportForm').addEventListener('submit', async function(e) {
+                    e.preventDefault();
+                    if (document.querySelector('input[name="website_url"]').value !== '') {
+                        alert('系统检测：非人类操作，已拦截。'); return;
+                    }
+                    if (parseInt(document.getElementById('mathAnswer').value) !== correctAnswer) {
+                        alert('验证失败：数学题计算错误，请重试。'); return;
+                    }
+
+                    const submitBtn = document.querySelector('.submit-btn');
+                    submitBtn.disabled = true;
+                    submitBtn.textContent = "正在发送至 G.R.D.M. 总部...";
+
+                    try {
+                        const response = await fetch(apiUrl, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                title: document.getElementById('bugTitle').value,
+                                desc: document.getElementById('bugDesc').value,
+                                steps: document.getElementById('bugSteps').value
+                            })
+                        });
+                        const result = await response.json();
+                        if (result.status === 'success') {
+                            alert(` 提交成功！\n\n关于“${document.getElementById('bugTitle').value}”的报告已发送至 G.R.D.M. 服务器。`);
+                            document.getElementById('bugReportForm').reset();
+                            num1 = Math.floor(Math.random() * 20); num2 = Math.floor(Math.random() * 20);
+                            correctAnswer = num1 + num2;
+                            document.getElementById('mathQuestion').textContent = `${num1} + ${num2} = ?`;
+                        } else {
+                            alert(' 提交失败：服务器返回异常。');
+                        }
+                    } catch (error) {
+                        alert(' 提交失败：G.R.D.M. 接收站当前离线，请稍后再试！');
+                    } finally {
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = "提交反馈报告";
+                    }
+                });
     </script>
 </body>
 </html>
