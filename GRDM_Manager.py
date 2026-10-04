@@ -64,32 +64,44 @@ def push_to_github():
         print(f"[G.R.D.M.] [ERROR] Push 失败: {p_res.stderr}")
 
 def run_tunnel():
-    print("[G.R.D.M.] [START] 启动 Cloudflare 隧道...")
-    try:
-        process = subprocess.Popen(
-            [TUNNEL_CMD, "tunnel", "--url", "http://localhost:5000"],
-            stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-            text=True, bufsize=1, universal_newlines=True,
-            encoding='utf-8', errors='replace'
-        )
+    print("[G.R.D.M.] [START] 正在启动 Cloudflare 隧道...")
+    
+    # 1. 启动隧道进程
+    process = subprocess.Popen(
+        ["cloudflared", "tunnel", "--url", "http://localhost:5000"],
+        stdout=subprocess.PIPE, 
+        stderr=subprocess.STDOUT, # 把错误也合并到输出里
+        text=True, 
+        bufsize=1
+    )
 
-        tunnel_url = None
-        for line in process.stdout:
-            print(line, end='')
-            if "trycloudflare.com" in line and "https://" in line:
-                match = re.search(r'(https://[a-zA-Z0-9-]+\.trycloudflare\.com)', line)
-                if match:
-                    tunnel_url = match.group(1)
-                    print(f"\n[G.R.D.M.] [FOUND] 捕获链接: {tunnel_url}")
-                    break
+    tunnel_url = None
+    
+    # 2. 暴力循环读取，直到抓到链接
+    print("[G.R.D.M.] [WAIT] 等待隧道分配地址 (可能需要几秒)...")
+    while True:
+        line = process.stdout.readline()
+        if not line:
+            break
+            
+        # 【关键】不管有没有打印出来，只要行里有 trycloudflare.com 就抓！
+        if "trycloudflare.com" in line:
+            match = re.search(r'(https://[a-zA-Z0-9-]+\.trycloudflare\.com)', line)
+            if match:
+                tunnel_url = match.group(1)
+                print(f"\n[G.R.D.M.] [FOUND] 🎉 捕获到有效链接: {tunnel_url}")
+                break
         
-        if tunnel_url:
-            update_index_html(tunnel_url)
-            push_to_github()
-        
-        process.wait()
-    except KeyboardInterrupt:
-        print("\n[G.R.D.M.] [STOP] 正在关闭...")
+        # 为了防止卡死，这里加个超时或者心跳检测也可以，但先试试这个
+    
+    if tunnel_url:
+        update_index_html(tunnel_url)
+        push_to_github()
+        print("[G.R.D.M.] [DONE] 任务完成！Flask 和隧道将在后台继续运行。")
+        # 【关键】任务完成后，让主进程退出，但保留子进程
+        sys.exit(0) 
+    else:
+        print("[G.R.D.M.] [ERROR] 未能捕获链接，请检查 cloudflared 是否正常运行。")
         process.terminate()
 
 if __name__ == "__main__":
