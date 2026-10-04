@@ -121,13 +121,61 @@
             font-size: 12px;
             color: #999;
         }
-    </style>
+    
+        /* 服务器状态指示灯 */
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        .status-indicator.online {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #c8e6c9;
+        }
+        .status-indicator.offline {
+            background-color: #ffebee;
+            color: #c62828;
+            border: 1px solid #ffcdd2;
+        }
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        .status-dot.online {
+            background-color: #4caf50;
+            box-shadow: 0 0 8px rgba(76, 175, 80, 0.6);
+            animation: pulse-green 2s infinite;
+        }
+        .status-dot.offline {
+            background-color: #f44336;
+            box-shadow: 0 0 8px rgba(244, 67, 54, 0.6);
+        }
+        @keyframes pulse-green {
+            0% { box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(76, 175, 80, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(76, 175, 80, 0); }
+        }
+</style>
 </head>
 <body>
     <div class="container">
         <div class="header">
             <h1>G.R.D.M. 漏洞反馈中心</h1>
             <p>感谢您协助我们完善我们的产品</p>
+        </div>
+        <div id="serverStatus" class="status-indicator offline">
+            <span class="status-dot offline"></span>
+            <span id="statusText">正在检测服务器状态...</span>
         </div>
         <input type="text" name="website_url" class="honeypot" />
         <form id="bugReportForm">
@@ -158,7 +206,7 @@
     <script>
                 // ============ 核心：智能寻址系统 ============
                 // 这次是真的填进去了！
-        const TUNNEL_URL = "https://webpage-headphones-rabbit-races.trycloudflare.com";
+        const TUNNEL_URL = "https://mortgages-vegetarian-lips-sort.trycloudflare.com";
 
                 let apiUrl = '/submit'; // 默认走本地/隧道
                 if (window.location.hostname.includes('github.io')) {
@@ -171,7 +219,48 @@
                 let correctAnswer = num1 + num2;
                 document.getElementById('mathQuestion').textContent = `${num1} + ${num2} = ?`;
 
-                document.getElementById('bugReportForm').addEventListener('submit', async function(e) {
+                
+                // ============ 服务器心跳检测 ============
+                function checkServerHealth() {
+                    const statusEl = document.getElementById('serverStatus');
+                    const statusTextEl = document.getElementById('statusText');
+                    const dotEl = statusEl.querySelector('.status-dot');
+                    
+                    // 确定健康检查的URL（和提交API用同一个地址）
+                    let healthUrl = '/health';
+                    if (window.location.hostname.includes('github.io')) {
+                        healthUrl = TUNNEL_URL + '/health';
+                    }
+                    
+                    fetch(healthUrl, { method: 'GET' })
+                        .then(response => {
+                            if (response.ok) {
+                                // 服务器在线 - 绿灯
+                                statusEl.className = 'status-indicator online';
+                                dotEl.className = 'status-dot online';
+                                statusTextEl.textContent = 'G.R.D.M.服务器正在正常运行';
+                                console.log('[G.R.D.M.] 心跳检测: 服务器在线');
+                            } else {
+                                throw new Error('服务器返回异常状态');
+                            }
+                        })
+                        .catch(error => {
+                            // 服务器离线 - 红灯
+                            statusEl.className = 'status-indicator offline';
+                            dotEl.className = 'status-dot offline';
+                            statusTextEl.textContent = 'G.R.D.M.服务器已休息，若需要更新状态，请刷新本网站';
+                            console.log('[G.R.D.M.] 心跳检测: 服务器离线', error);
+                        });
+                }
+                
+                // 页面加载完成后立即检测一次
+                checkServerHealth();
+                
+                // 每30秒自动刷新一次状态
+                setInterval(checkServerHealth, 30000);
+                // ====================================
+
+document.getElementById('bugReportForm').addEventListener('submit', async function(e) {
                     e.preventDefault();
                     if (document.querySelector('input[name="website_url"]').value !== '') {
                         alert('系统检测：非人类操作，已拦截。'); return;

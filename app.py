@@ -50,6 +50,22 @@ def submit_bug():
         print(f"[G.R.D.M.] ❌ 错误: {str(e)}")
         return jsonify({"error": str(e)}), 500
 
+
+@app.route('/health', methods=['GET', 'OPTIONS'])
+def health_check():
+    """
+    【心跳检测】极简健康检查接口
+    前端页面会自动调用此接口来判断服务器是否在线
+    """
+    # 处理预检请求
+    if request.method == 'OPTIONS':
+        return make_response('', 200)
+    
+    return jsonify({
+        "status": "ok",
+        "message": "G.R.D.M.服务器正在正常运行"
+    }), 200
+
 @app.route('/', methods=['GET'])
 def index():
     return "G.R.D.M. Server is running."
