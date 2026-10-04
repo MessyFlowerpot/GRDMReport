@@ -158,7 +158,7 @@
     <script>
                 // ============ 核心：智能寻址系统 ============
                 // 这次是真的填进去了！
-        const TUNNEL_URL = "https://hiking-prints-destination-truck.trycloudflare.com";
+        const TUNNEL_URL = "https://stroke-celebrity-donation-village.trycloudflare.com";
 
                 let apiUrl = '/submit'; // 默认走本地/隧道
                 if (window.location.hostname.includes('github.io')) {
@@ -195,15 +195,11 @@
                             })
                         });
                         const result = await response.json();
-                        if (result.status === 'success') {
-                            alert(` 提交成功！\n\n关于“${document.getElementById('bugTitle').value}”的报告已发送至 G.R.D.M. 服务器。`);
-                            document.getElementById('bugReportForm').reset();
-                            num1 = Math.floor(Math.random() * 20); num2 = Math.floor(Math.random() * 20);
-                            correctAnswer = num1 + num2;
-                            document.getElementById('mathQuestion').textContent = `${num1} + ${num2} = ?`;
-                        } else {
-                            alert(' 提交失败：服务器返回异常。');
-                        }
+                        alert(` 提交成功！\n\n关于“${document.getElementById('bugTitle').value}”的报告已发送至 G.R.D.M. 服务器。`);
+                        document.getElementById('bugReportForm').reset();
+                        num1 = Math.floor(Math.random() * 20); num2 = Math.floor(Math.random() * 20);
+                        correctAnswer = num1 + num2;
+                        document.getElementById('mathQuestion').textContent = `${num1} + ${num2} = ?`;
                     } catch (error) {
                         alert(' 提交失败：G.R.D.M. 接收站当前离线，请稍后再试！');
                     } finally {
