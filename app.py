@@ -42,8 +42,13 @@ def submit_bug():
         return jsonify({"message": "情报接收成功！", "file": filename}), 200
 
     except Exception as e:
-        print(f"[G.R.D.M. Server] 错误: {str(e)}")
-        return jsonify({"error": str(e)}), 500
+        # 【调试模式】直接把错误详情打印在控制台，并返回给前端
+        import traceback
+        error_detail = traceback.format_exc() # 获取完整的报错堆栈
+        print(f"[G.R.D.M. Server] 发生严重错误:\n{error_detail}") 
+        
+        # 返回具体的错误信息给前端弹窗
+        return jsonify({"error": f"服务器内部错误: {str(e)}"}), 500
 
 @app.route('/', methods=['GET'])
 def index():
